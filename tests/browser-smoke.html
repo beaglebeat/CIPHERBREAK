@@ -1,0 +1,51 @@
+<!doctype html><html><head><meta charset="utf-8"/><link rel="stylesheet" href="../css/style.css"/><script defer src="../js/aes.js"></script><script defer src="../js/challenges.js"></script><script defer src="../js/game.js"></script></head><body>
+<header><span id="top-progress"></span><span id="top-timer"></span><button id="reset-top" hidden></button></header>
+<main id="home"></main>
+<main id="play" hidden><aside id="mission-list"></aside><section id="mission-panel"></section><aside id="workbench"></aside></main>
+<main id="final" hidden></main>
+<div id="smoke-out">STARTING</div>
+<script>
+window.addEventListener('load',()=>{setTimeout(()=>{
+let results=[];
+try{
+const C=window.CryptoLab;
+const click=a=>{const e=document.querySelector(`[data-action="${a}"]`);if(!e)throw Error('Missing '+a);e.click();};
+const hex=s=>C.fromHex(s);
+const val=i=>document.getElementById(i);
+const baseCopy=()=>[...document.querySelectorAll('#mission-panel .datum .icon-btn')].map(e=>e.dataset.copy);
+click('start-all');
+for(let n=0;n<6;n++){
+ const title=document.querySelector('.mission-head h1').textContent;
+ const q=window.CIPHERBREAK_QUESTIONS.find(x=>x.title===title);if(!q)throw Error('Unknown mission '+title);
+ const type=q.type;
+ let answer;
+ if(type==='ecb-codebook'){
+   for(const r of ['ADMIN','GUEST','EDITOR']){
+     val('oracle-plain').value={ADMIN:'ROLE=ADMIN______',GUEST:'ROLE=GUEST______',EDITOR:'ROLE=EDITOR_____'}[r];click('oracle');
+     if((document.getElementById('oracle-output').textContent.match(/#\d+/g)||[]).length===3){answer=r;break;}
+   }
+   if(!answer)throw Error('Oracle did not reveal repeated role');
+ } else if(type==='cbc-iv'){
+    const [iv,ct,known,target]=baseCopy();answer=C.hex(C.xor(hex(iv),C.xor(C.utf8(known),C.utf8(target))));
+ } else if(type==='ctr-reuse'||type==='gcm-reuse'){
+    const [nonce,known,knownCt,targetCt]=baseCopy();answer=C.text(C.xor(C.xor(C.utf8(known),hex(knownCt)),hex(targetCt)));
+ } else {
+    const [nonce,ct,known,target]=baseCopy();answer=C.hex(C.xor(hex(ct),C.xor(C.utf8(known),C.utf8(target))));
+ }
+ val('attack-answer').value=answer;click('attack');
+ if(!document.querySelector('.repair-options'))throw Error('Attack rejected for '+type+' | feedback: '+document.getElementById('feedback')?.textContent);
+ val('category-choice').value=q.diagnosis;
+ document.querySelector(`input[name="fix"][value="${q.remediation.correct}"]`).checked=true;
+ click('diagnose');
+ if(!document.querySelector('.complete-card'))throw Error('Diagnosis rejected for '+type);
+ results.push('PASS '+type);
+ click('next');
+}
+if(!document.querySelector('.finish'))throw Error('Missing finish screen');
+val('score-name').value='Smoke test';click('save-score');
+if(!document.querySelector('.saved-note')&&!document.getElementById('final').textContent.includes('Browser storage is unavailable'))throw Error('Leaderboard did not save or show storage fallback');
+results.push('PASS finish screen / local leaderboard');
+document.getElementById('smoke-out').textContent='ALL_BROWSER_SMOKE_PASS '+results.join(' | ');
+}catch(e){document.getElementById('smoke-out').textContent='BROWSER_SMOKE_FAIL '+String(e.stack||e)+' | results: '+results.join(', ');console.error(e);}
+},180);});
+</script></body></html>

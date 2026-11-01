@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#080f19" />
+  <meta name="description" content="CIPHERBREAK — zero-dependency AES implementation-mistakes capture-the-flag lab. ECB, CBC, CTR, GCM, nonces and authenticated encryption." />
+  <title>CIPHERBREAK // Applied Cryptography CTF</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script defer src="js/aes.js"></script>
+  <script defer src="js/challenges.js"></script>
+  <script defer src="js/game.js"></script>
+</head>
+<body>
+  <div class="grid-background" aria-hidden="true"></div>
+  <header class="topbar"><div class="brand"><span class="brand-mark">⌁</span><div><strong>CIPHER<span>BREAK</span></strong><small>APPLIED CRYPTOGRAPHY LAB</small></div></div><div class="top-right"><span class="local-badge"><span></span> LOCAL SIMULATION</span><div class="top-stat"><small>PROGRESS</small><strong id="top-progress">READY</strong></div><div class="top-stat timer"><small>SESSION TIME</small><strong id="top-timer">00:00:00</strong></div><button type="button" id="reset-top" class="reset-btn" data-action="reset" hidden>EXIT ↗</button></div></header>
+  <main id="home" class="home"></main>
+  <main id="play" class="app-layout" hidden>
+    <aside id="mission-list" class="mission-sidebar" aria-label="Mission progress"></aside>
+    <section id="mission-panel" class="mission-content" aria-label="Current challenge"></section>
+    <aside id="workbench" class="workbench" aria-label="Cryptanalysis workbench"></aside>
+  </main>
+  <main id="final" class="final-page" hidden></main>
+  <footer class="page-footer"><span>CIPHERBREAK <b>/</b> AES MISUSE LAB</span><span>ECE576 · CRYPTOGRAPHIC IMPLEMENTATION MISTAKES</span><span>EDUCATIONAL SOFTWARE · NOT PRODUCTION CRYPTO</span></footer>
+</body>
+</html>
